@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,14 +16,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFrom
 import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Button
+import androidx.compose.material.DrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.rememberDrawerState
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.sourceInformation
 import androidx.compose.ui.Alignment
@@ -33,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import ui.theme.AppTheme
@@ -137,12 +151,14 @@ class MyChildClass(var childValue: String, var otherValue: String) : MyClass(chi
 fun myFunction(x: Int, y: Int) = x + y
 @Composable
 fun Banner(name: String) {
-    Row (modifier = Modifier.padding(24.dp).fillMaxWidth().border(BorderStroke(1.dp, Color.Black)), verticalAlignment = Alignment.CenterVertically,
+    Text("Hello $name")
+
+    /*Row (modifier = Modifier.padding(24.dp).fillMaxWidth().border(BorderStroke(1.dp, Color.Black)), verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center){
         Column {
 //        Text("Welcome to my App")
 //        Spacer(modifier = Modifier.height(20.dp))
-//        Text("Hello $name")
+
             Row { Text("1")}
             Row { Text("1")}
             Row { Text("1")}
@@ -177,7 +193,7 @@ fun Banner(name: String) {
             Row { Text("3")}
             Row { Text("3")}
         }
-    }
+    }*/
 
 }
 
@@ -234,13 +250,133 @@ fun ComposeQuadrant() {
     }
 }
 
+@Composable
+fun TopBar(onMenuClicked: () -> Unit) {
+    TopAppBar(
+        title = {
+            Text(text = "My App", color = Color.White)
+        },
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.Default.Menu,
+                contentDescription = "Menu",
+
+                modifier = Modifier.clickable (onClick = onMenuClicked),
+                tint = Color.White
+            )
+        },
+        backgroundColor = Color(0xFF0F9D58)
+    )
+}
+
+@Composable
+fun BottomBar() {
+
+    BottomAppBar(
+        backgroundColor = Color(0xFF0F9D58)
+
+    ) {
+        Text(text = "Bottom App Bar", color = Color.White)
+    }
+}
+
+@Composable
+fun Drawer() {
+
+    Column(
+        Modifier
+            .background(Color.White)
+            .fillMaxSize()
+    ) {
+        repeat(5) { item ->
+            Text(text = "Item number $item", modifier = Modifier.padding(8.dp), color = Color.Black)
+        }
+    }
+}
+
+@Composable
+fun Body() {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        Text(text = "Body Content", color = Color(0xFF0F9D58))
+    }
+}
+
+@Composable
+fun NeatScreen() {
+    //topBar = { TopAppBar ( title = {Text("My App")} )},
+
+    val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
+
+    val coroutineScope = rememberCoroutineScope()
+
+    Scaffold(
+
+        scaffoldState = scaffoldState,
+
+        topBar = {
+            TopBar(
+
+                onMenuClicked = {
+                    coroutineScope.launch {
+                        scaffoldState.drawerState.open()
+                    }
+                })
+        },
+
+        bottomBar = { BottomBar() },
+
+        content = {
+            Body()
+        },
+
+        drawerContent = {
+            Drawer()
+        },
+
+//        floatingActionButton = {
+//            // Create a floating action button in
+//            // floatingActionButton parameter of scaffold
+//            FloatingActionButton(
+//
+//                onClick = {
+//                    // When clicked open Snackbar
+//                    coroutineScope.launch {
+//                        when (scaffoldState.snackbarHostState.showSnackbar(
+//                            // Message In the snackbar
+//                            message = "Snack Bar",
+//                            actionLabel = "Dismiss"
+//                        )) {
+//                            SnackbarResult.Dismissed -> {
+//                                // do something when
+//                                // snack bar is dismissed
+//                            }
+//
+//                            SnackbarResult.ActionPerformed -> {
+//                                // when it appears
+//                            }
+//                        }
+//                    }
+//                }) {
+//                // Simple Text inside FAB
+//                Text(text = "X")
+//            }
+//        }
+    )
+}
+
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun App() {
 
     AppTheme {
-        //NeatScreen()
-        Banner("Justin")
+        NeatScreen()
+        //Banner("Justin")
     }
 
     //Banner("Justin")
