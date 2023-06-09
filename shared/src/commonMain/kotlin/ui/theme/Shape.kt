@@ -8,7 +8,8 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 
 val ThemeShapes = Shapes(
-    small = CutCornerShape(40.dp),
+    //small = CutCornerShape(40.dp),
+    small = RoundedCornerShape(5.dp),
     medium = RoundedCornerShape(20.dp),
     large = RoundedCornerShape(0.dp)
 )

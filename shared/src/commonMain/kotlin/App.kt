@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,23 +26,28 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.sourceInformation
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,6 +56,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import ui.theme.AppTheme
+import kotlin.math.absoluteValue
 
 
 fun greeting(name: String, age: String): String {
@@ -277,6 +284,7 @@ fun BottomBar() {
 
     ) {
         Text(text = "Bottom App Bar", color = Color.White)
+        Icon(Icons.Filled.Call, contentDescription = "any")
     }
 }
 
@@ -297,16 +305,119 @@ fun Drawer() {
 @Composable
 fun Body() {
     Column(
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Text(text = "Body Content", color = Color(0xFF0F9D58))
+        //Banner("Justin")
+        //ComposeQuadrant()
+        MyForm()
+        //Text(text = "Body Content", color = Color(0xFF0F9D58))
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+fun MyForm() {
+    val nameValue = rememberSaveable{ mutableStateOf("")}
+    val emailValue = rememberSaveable{ mutableStateOf("")}
+    val passwordValue = rememberSaveable{ mutableStateOf("") }
+    var metric by rememberSaveable { mutableStateOf(true) }
+    val metricHeight = rememberSaveable { (mutableStateOf("")) }
+    val metricWeight = rememberSaveable { (mutableStateOf("")) }
+    val imperialHeight = rememberSaveable { (mutableStateOf("")) }
+    val imperialWeight = rememberSaveable { (mutableStateOf("")) }
+    var bmiWeight = rememberSaveable { (mutableStateOf(0.0)) }
+    var bmiHeight = rememberSaveable { (mutableStateOf(0.0)) }
+    var bmi = rememberSaveable { (mutableStateOf(0.0)) }
+
+    Column(verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally){
+        Image(
+            painterResource("bg_compose_background.png"),
+            contentDescription = "Image Description",
+        )
+        TextField(
+            value = nameValue.value,
+            onValueChange = { nameValue.value = it},
+            textStyle = TextStyle(textAlign = TextAlign.Center),
+            label = { Text(text = "Enter your Name")}
+        )
+        Spacer(modifier = Modifier.height(20.dp).width(20.dp))
+        TextField(
+            value = emailValue.value,
+            onValueChange = { emailValue.value = it},
+            textStyle = TextStyle(textAlign = TextAlign.Center),
+            label = { Text(text = "Enter your Email")}
+        )
+        Spacer(modifier = Modifier.height(20.dp).width(20.dp))
+        TextField(
+            value = passwordValue.value,
+            onValueChange = { passwordValue.value = it},
+            textStyle = TextStyle(textAlign = TextAlign.Center),
+            label = { Text(text = "Enter your Password")}
+        )
+
+        Row {
+            Button(onClick = { metric = true }) {
+                Text(text = "Metric")
+                //println(metric)
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Button(onClick = { metric = false }) {
+                Text(text = "Imperial")
+                //println(metric)
+            }
+        }
+
+        if(metric){
+            TextField(
+                value = metricHeight.value,
+                onValueChange = { metricHeight.value = it},
+                textStyle = TextStyle(textAlign = TextAlign.Center),
+                label = { Text(text = "Height: centimeters")}
+            )
+            TextField(
+                value = metricWeight.value,
+                onValueChange = { metricWeight.value = it},
+                textStyle = TextStyle(textAlign = TextAlign.Center),
+                label = { Text(text = "Weight: kilograms")}
+            )
+        }
+        else {
+            TextField(
+                value = metricHeight.value,
+                onValueChange = { imperialHeight.value = it},
+                textStyle = TextStyle(textAlign = TextAlign.Center),
+                label = { Text(text = "Height: Inches")}
+            )
+            TextField(
+                value = metricWeight.value,
+                onValueChange = { imperialWeight.value = it},
+                textStyle = TextStyle(textAlign = TextAlign.Center),
+                label = { Text(text = "Weight: pounds")}
+            )
+        }
+
+        Button(onClick = {
+            bmiWeight.value = metricWeight.value.toDouble()
+            bmiHeight.value = metricHeight.value.toDouble() / 100.0
+            bmi.value = bmiWeight.value / (bmiHeight.value * bmiHeight.value)
+            println(bmi.value.toInt())
+        }) {
+            Text(text = "Submit")
+        }
+
+
+        Text( text = "Your BMI is ${bmi.value.toInt()}")
+
+    }
+}
+
+
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun NeatScreen() {
     //topBar = { TopAppBar ( title = {Text("My App")} )},
@@ -375,9 +486,12 @@ fun NeatScreen() {
 fun App() {
 
     AppTheme {
+
         NeatScreen()
         //Banner("Justin")
     }
+
+
 
     //Banner("Justin")
     //ComposeArticle()
