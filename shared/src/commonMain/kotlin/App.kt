@@ -31,7 +31,10 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -261,7 +264,7 @@ fun ComposeQuadrant() {
 fun TopBar(onMenuClicked: () -> Unit) {
     TopAppBar(
         title = {
-            Text(text = "My App", color = Color.White)
+            Text(text = "Sign Up", color = Color.White)
         },
         navigationIcon = {
             Icon(
@@ -305,8 +308,8 @@ fun Drawer() {
 @Composable
 fun Body() {
     Column(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Top,
+//        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
@@ -327,37 +330,45 @@ fun MyForm() {
     var metric by rememberSaveable { mutableStateOf(true) }
     val metricHeight = rememberSaveable { (mutableStateOf("")) }
     val metricWeight = rememberSaveable { (mutableStateOf("")) }
-    val imperialHeight = rememberSaveable { (mutableStateOf("")) }
+    val imperialFoot = rememberSaveable { (mutableStateOf("")) }
+    val imperialInch = rememberSaveable { (mutableStateOf("")) }
     val imperialWeight = rememberSaveable { (mutableStateOf("")) }
     var bmiWeight = rememberSaveable { (mutableStateOf(0.0)) }
     var bmiHeight = rememberSaveable { (mutableStateOf(0.0)) }
     var bmi = rememberSaveable { (mutableStateOf(0.0)) }
 
     Column(verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally){
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+    ){
         Image(
-            painterResource("bg_compose_background.png"),
+            //painterResource("bg_compose_background.png"),
+            painterResource("Exercise.jpg"),
             contentDescription = "Image Description",
+            modifier = Modifier.fillMaxWidth()
         )
         TextField(
             value = nameValue.value,
             onValueChange = { nameValue.value = it},
-            textStyle = TextStyle(textAlign = TextAlign.Center),
-            label = { Text(text = "Enter your Name")}
+            textStyle = TextStyle(textAlign = TextAlign.Start),
+            label = { Text(text = "Enter your Name")},
+            leadingIcon = {Icon(Icons.Filled.Person, contentDescription = "Name")}
         )
         Spacer(modifier = Modifier.height(20.dp).width(20.dp))
         TextField(
             value = emailValue.value,
             onValueChange = { emailValue.value = it},
-            textStyle = TextStyle(textAlign = TextAlign.Center),
-            label = { Text(text = "Enter your Email")}
+            textStyle = TextStyle(textAlign = TextAlign.Start),
+            label = { Text(text = "Enter your Email")},
+            leadingIcon = { Icon(Icons.Filled.Email, contentDescription = "Email")}
         )
         Spacer(modifier = Modifier.height(20.dp).width(20.dp))
         TextField(
             value = passwordValue.value,
             onValueChange = { passwordValue.value = it},
-            textStyle = TextStyle(textAlign = TextAlign.Center),
-            label = { Text(text = "Enter your Password")}
+            textStyle = TextStyle(textAlign = TextAlign.Start),
+            label = { Text(text = "Enter your Password")},
+            leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Password")}
         )
 
         Row {
@@ -387,29 +398,54 @@ fun MyForm() {
             )
         }
         else {
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+                    ){
+                TextField(
+                    modifier = Modifier.weight(1f).padding(start = 65.dp),
+                    value = imperialFoot.value,
+                    onValueChange = { imperialFoot.value = it},
+                    textStyle = TextStyle(textAlign = TextAlign.Center),
+                    label = { Text(text = "Foot")}
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                TextField(
+                    modifier = Modifier.weight(1f).padding(end = 65.dp),
+                    value = imperialInch.value,
+                    onValueChange = { imperialInch.value = it},
+                    textStyle = TextStyle(textAlign = TextAlign.Center),
+                    label = { Text(text = "Inch")}
+                )
+            }
             TextField(
-                value = metricHeight.value,
-                onValueChange = { imperialHeight.value = it},
-                textStyle = TextStyle(textAlign = TextAlign.Center),
-                label = { Text(text = "Height: Inches")}
-            )
-            TextField(
-                value = metricWeight.value,
+                value = imperialWeight.value,
                 onValueChange = { imperialWeight.value = it},
                 textStyle = TextStyle(textAlign = TextAlign.Center),
                 label = { Text(text = "Weight: pounds")}
             )
         }
 
+
         Button(onClick = {
-            bmiWeight.value = metricWeight.value.toDouble()
-            bmiHeight.value = metricHeight.value.toDouble() / 100.0
-            bmi.value = bmiWeight.value / (bmiHeight.value * bmiHeight.value)
-            println(bmi.value.toInt())
+            if(metric){
+                bmiWeight.value = metricWeight.value.toDouble()
+                bmiHeight.value = metricHeight.value.toDouble() / 100.0
+                bmi.value = bmiWeight.value / (bmiHeight.value * bmiHeight.value)
+            }
+            else {
+                bmiHeight.value = ((imperialFoot.value.toDouble() * 12) + imperialInch.value.toDouble()) / 39.37
+                bmiWeight.value = imperialWeight.value.toDouble() / 2.205
+                bmi.value = bmiWeight.value / (bmiHeight.value * bmiHeight.value)
+            }
+            println(bmi.value)
+
+
+
+            //println(bmi.value.toInt())
         }) {
             Text(text = "Submit")
         }
-
 
         Text( text = "Your BMI is ${bmi.value.toInt()}")
 
