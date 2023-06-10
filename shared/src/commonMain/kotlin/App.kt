@@ -426,28 +426,28 @@ fun MyForm() {
             )
         }
 
-
-        Button(onClick = {
-            if(metric){
-                bmiWeight.value = metricWeight.value.toDouble()
-                bmiHeight.value = metricHeight.value.toDouble() / 100.0
-                bmi.value = bmiWeight.value / (bmiHeight.value * bmiHeight.value)
+        if(nameValue.value.isNotEmpty() && emailValue.value.isNotEmpty() && passwordValue.value.isNotEmpty()){
+            if(metric && metricHeight.value.isNotEmpty() && metricWeight.value.isNotEmpty()){
+                Button(onClick = {
+                    bmiWeight.value = metricWeight.value.toDouble()
+                    bmiHeight.value = metricHeight.value.toDouble() / 100.0
+                    bmi.value = bmiWeight.value / (bmiHeight.value * bmiHeight.value)
+                }) {
+                    Text(text = "Submit")
+                }
+                Text( text = "Your BMI is ${bmi.value.toInt()}")
             }
-            else {
-                bmiHeight.value = ((imperialFoot.value.toDouble() * 12) + imperialInch.value.toDouble()) / 39.37
-                bmiWeight.value = imperialWeight.value.toDouble() / 2.205
-                bmi.value = bmiWeight.value / (bmiHeight.value * bmiHeight.value)
+            else if(!metric && imperialFoot.value.isNotEmpty() && imperialInch.value.isNotEmpty() && imperialWeight.value.isNotEmpty()){
+                Button(onClick = {
+                    bmiHeight.value = ((imperialFoot.value.toDouble() * 12) + imperialInch.value.toDouble()) / 39.37
+                    bmiWeight.value = imperialWeight.value.toDouble() / 2.205
+                    bmi.value = bmiWeight.value / (bmiHeight.value * bmiHeight.value)
+                }) {
+                    Text(text = "Submit")
+                }
+                Text( text = "Your BMI is ${bmi.value.toInt()}")
             }
-            println(bmi.value)
-
-
-
-            //println(bmi.value.toInt())
-        }) {
-            Text(text = "Submit")
         }
-
-        Text( text = "Your BMI is ${bmi.value.toInt()}")
 
     }
 }
@@ -468,7 +468,6 @@ fun NeatScreen() {
 
         topBar = {
             TopBar(
-
                 onMenuClicked = {
                     coroutineScope.launch {
                         scaffoldState.drawerState.open()
