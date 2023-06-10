@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+//import androidx.compose.foundation.layout.RowScopeInstance.weight
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFrom
 import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Button
 import androidx.compose.material.DrawerValue
@@ -24,6 +26,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -32,9 +36,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -49,9 +57,12 @@ import androidx.compose.runtime.sourceInformation
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,9 +70,10 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import ui.theme.AppTheme
+import ui.theme.ThemeShapes
 import kotlin.math.absoluteValue
 
-
+/*
 fun greeting(name: String, age: String): String {
     val message = "Hello $name, you are now $age old"
     var nums = IntArray(4, {it})
@@ -260,6 +272,16 @@ fun ComposeQuadrant() {
     }
 }
 
+ */
+
+/**     -----      START OF ASSIGNMENT       -----        */
+
+
+
+/**
+ * This is the top bar that shows the name of the Page and
+ * clickable Navigation Icon.
+ **/
 @Composable
 fun TopBar(onMenuClicked: () -> Unit) {
     TopAppBar(
@@ -275,33 +297,48 @@ fun TopBar(onMenuClicked: () -> Unit) {
                 tint = Color.White
             )
         },
-        backgroundColor = Color(0xFF0F9D58)
+        backgroundColor = Color(0xFFF6977A)
     )
 }
 
+/**
+ * This is the bottom bar of the Scaffolding. Here we show
+ * the different sections of the App like the Home Page,
+ * User Page, Shopping Page and Settings.
+ **/
 @Composable
 fun BottomBar() {
 
     BottomAppBar(
-        backgroundColor = Color(0xFF0F9D58)
+        backgroundColor = Color(0xFFF6977A)//f6977a
 
     ) {
-        Text(text = "Bottom App Bar", color = Color.White)
-        Icon(Icons.Filled.Call, contentDescription = "any")
+        //Text(text = "Bottom App Bar", color = Color.White)
+        Spacer(Modifier.weight(0.5f))
+        Icon(Icons.Filled.Home, contentDescription = "Home Page")
+        Spacer(Modifier.weight(1f))
+        Icon(Icons.Filled.Person, contentDescription = "User Page")
+        Spacer(Modifier.weight(1f))
+        Icon(Icons.Filled.ShoppingCart, contentDescription = "Shopping Page")
+        Spacer(Modifier.weight(1f))
+        Icon(Icons.Filled.Settings, contentDescription = "Settings Page")
+        Spacer(Modifier.weight(0.5f))
+
     }
 }
 
+/***
+ * This is where the contents for the drawer goes when the user
+ * click the navigation icon in the Top Bar. Here we will show
+ * links for various exercises on a specific region of the body.
+ */
 @Composable
 fun Drawer() {
-
     Column(
         Modifier
             .background(Color.White)
             .fillMaxSize()
     ) {
-//        repeat(5) { item ->
-//            Text(text = "Item number $item", modifier = Modifier.padding(8.dp), color = Color.Black)
-//        }
         Text(text = "Chest Exercise", modifier = Modifier.padding(8.dp), color = Color.Black)
         Text(text = "Cardio Exercise", modifier = Modifier.padding(8.dp), color = Color.Black)
         Text(text = "Legs Exercise", modifier = Modifier.padding(8.dp), color = Color.Black)
@@ -310,22 +347,27 @@ fun Drawer() {
     }
 }
 
+/**
+ * This is the body of the scaffold where we show the logo of the app
+ * and the Signup Form.
+ **/
 @Composable
 fun Body() {
     Column(
-//        verticalArrangement = Arrangement.Top,
-//        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        //Banner("Justin")
-        //ComposeQuadrant()
         MyForm()
-        //Text(text = "Body Content", color = Color(0xFF0F9D58))
     }
 }
-
+/**
+ * This is a signup form that gets the user's name, email, password,
+ * weight and height. It has an option for the user to choose between
+ * Metric and Imperial measurements. When the user filled-up all the
+ * required fields, the Submit button will appear. If the Submit button
+ * is pressed, it will calculate the user's BMI.
+ **/
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun MyForm() {
@@ -345,15 +387,15 @@ fun MyForm() {
 
     Column(verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().padding(start = 10.dp, end = 10.dp)
     ){
         Image(
-            //painterResource("bg_compose_background.png"),
             painterResource("Exercise.jpg"),
             contentDescription = "Image Description",
             modifier = Modifier.fillMaxWidth()
         )
-        TextField(
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth().clip(ThemeShapes.small),
             value = nameValue.value,
             onValueChange = { nameValue.value = it},
             textStyle = TextStyle(textAlign = TextAlign.Start),
@@ -361,7 +403,8 @@ fun MyForm() {
             leadingIcon = {Icon(Icons.Filled.Person, contentDescription = "Name")}
         )
         Spacer(modifier = Modifier.height(20.dp).width(20.dp))
-        TextField(
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth().clip(ThemeShapes.small),
             value = emailValue.value,
             onValueChange = { emailValue.value = it},
             textStyle = TextStyle(textAlign = TextAlign.Start),
@@ -369,23 +412,26 @@ fun MyForm() {
             leadingIcon = { Icon(Icons.Filled.Email, contentDescription = "Email")}
         )
         Spacer(modifier = Modifier.height(20.dp).width(20.dp))
-        TextField(
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth().clip(ThemeShapes.small),
             value = passwordValue.value,
             onValueChange = { passwordValue.value = it},
             textStyle = TextStyle(textAlign = TextAlign.Start),
             label = { Text(text = "Enter your Password")},
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            visualTransformation = PasswordVisualTransformation(),
             leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Password")}
         )
 
         Row {
-            Button(onClick = {
+            OutlinedButton(onClick = {
                 metric = true
                 showText.value = false}) {
                 Text(text = "Metric")
                 //println(metric)
             }
             Spacer(modifier = Modifier.width(10.dp))
-            Button(onClick = {
+            OutlinedButton(onClick = {
                 metric = false
                 showText.value = false}) {
                 Text(text = "Imperial")
@@ -394,13 +440,15 @@ fun MyForm() {
         }
 
         if(metric){
-            TextField(
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth().clip(ThemeShapes.small),
                 value = metricHeight.value,
                 onValueChange = { metricHeight.value = it},
                 textStyle = TextStyle(textAlign = TextAlign.Center),
                 label = { Text(text = "Height: centimeters")}
             )
-            TextField(
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth().clip(ThemeShapes.small),
                 value = metricWeight.value,
                 onValueChange = { metricWeight.value = it},
                 textStyle = TextStyle(textAlign = TextAlign.Center),
@@ -412,23 +460,24 @@ fun MyForm() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
                     ){
-                TextField(
-                    modifier = Modifier.weight(1f).padding(start = 65.dp),
+                OutlinedTextField(
+                    modifier = Modifier.weight(1f).clip(ThemeShapes.small),
                     value = imperialFoot.value,
                     onValueChange = { imperialFoot.value = it},
                     textStyle = TextStyle(textAlign = TextAlign.Center),
                     label = { Text(text = "Foot")}
                 )
                 Spacer(modifier = Modifier.width(10.dp))
-                TextField(
-                    modifier = Modifier.weight(1f).padding(end = 65.dp),
+                OutlinedTextField(
+                    modifier = Modifier.weight(1f).clip(ThemeShapes.small),
                     value = imperialInch.value,
                     onValueChange = { imperialInch.value = it},
                     textStyle = TextStyle(textAlign = TextAlign.Center),
                     label = { Text(text = "Inch")}
                 )
             }
-            TextField(
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth().clip(ThemeShapes.small),
                 value = imperialWeight.value,
                 onValueChange = { imperialWeight.value = it},
                 textStyle = TextStyle(textAlign = TextAlign.Center),
@@ -446,8 +495,6 @@ fun MyForm() {
                 }) {
                     Text(text = "Submit")
                 }
-//                Text( text = "Your BMI is ${bmi.value.toInt()}")
-//                CheckBMI(bmi.value.toInt())
             }
             else if(!metric && imperialFoot.value.isNotEmpty() && imperialInch.value.isNotEmpty() && imperialWeight.value.isNotEmpty()){
                 Button(onClick = {
@@ -459,49 +506,55 @@ fun MyForm() {
                     Text(text = "Submit")
 
                 }
-//                Text( text = "Your BMI is ${bmi.value.toInt()}")
-//                CheckBMI(bmi.value.toInt())
             }
-
             if(showText.value){
                 Text( text = "Your BMI is ${bmi.value.toInt()}")
                 CheckBMI(bmi.value.toInt())
             }
-
         }
-
     }
 }
+
+/**
+ * Base on the calculated BMI, this function will classify
+ * the user's BMI and give the recommended exercises.
+ *
+ * */
 @Composable
 fun CheckBMI(bmi: Int ) {
     if(bmi >= 40){
-        Text( text = "base on your BMI you are Severe Obese, these our recommended exercises for you")
+        Text( text = "base on your BMI you are Severe Obese, these our recommended exercises for you", textAlign = TextAlign.Justify)
     }
     else if(bmi in 35..39) {
-        Text( text = "base on your BMI you are Moderate Obese, these our recommended exercises for you")
+        Text( text = "base on your BMI you are Moderate Obese, these our recommended exercises for you", textAlign = TextAlign.Justify)
     }
     else if(bmi in 30 .. 34) {
-        Text( text = "base on your BMI you are Mild Obese, these our recommended exercises for you")
+        Text( text = "base on your BMI you are Mild Obese, these our recommended exercises for you", textAlign = TextAlign.Justify)
     }
     else if(bmi in 25 .. 29){
-        Text( text = "base on your BMI you are Overweight, these our recommended exercises for you")
+        Text( text = "base on your BMI you are Overweight, these our recommended exercises for you", textAlign = TextAlign.Justify)
     }
     else if(bmi in 18 .. 24){
-        Text( text = "base on your BMI you have Normal Weight, these our recommended exercises for you")
+        Text( text = "base on your BMI you have Normal Weight, these our recommended exercises for you", textAlign = TextAlign.Justify)
     }
     else if (bmi < 18){
-        Text( text = "base on your BMI you are Under weight, these our recommended exercises for you")
+        Text( text = "base on your BMI you are Under weight, these our recommended exercises for you", textAlign = TextAlign.Justify)
     }
 }
 
+/**
+ * This is the function that creates the Scaffold Composable. The scaffold
+ * contains the TopBar, BottomBar, Body and the Drawer.
+ * The drawer is inspired from: https://www.geeksforgeeks.org/scaffold-in-android-using-jetpack-compose/
+ */
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun NeatScreen() {
 
-    val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
+    val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed)) //initial value of scaffold is that Drawer is close
 
-    val coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope() // this is like AsyncTask where the task is executed at the background instead of the main thread
 
     Scaffold(
 
@@ -511,7 +564,7 @@ fun NeatScreen() {
             TopBar(
                 onMenuClicked = {
                     coroutineScope.launch {
-                        scaffoldState.drawerState.open()
+                        scaffoldState.drawerState.open()        //open the Drawer when the navigation icon is clicked
                     }
                 })
         },
@@ -524,36 +577,7 @@ fun NeatScreen() {
 
         drawerContent = {
             Drawer()
-        },
-
-//        floatingActionButton = {
-//            // Create a floating action button in
-//            // floatingActionButton parameter of scaffold
-//            FloatingActionButton(
-//
-//                onClick = {
-//                    // When clicked open Snackbar
-//                    coroutineScope.launch {
-//                        when (scaffoldState.snackbarHostState.showSnackbar(
-//                            // Message In the snackbar
-//                            message = "Snack Bar",
-//                            actionLabel = "Dismiss"
-//                        )) {
-//                            SnackbarResult.Dismissed -> {
-//                                // do something when
-//                                // snack bar is dismissed
-//                            }
-//
-//                            SnackbarResult.ActionPerformed -> {
-//                                // when it appears
-//                            }
-//                        }
-//                    }
-//                }) {
-//                // Simple Text inside FAB
-//                Text(text = "X")
-//            }
-//        }
+        }
     )
 }
 
@@ -562,9 +586,7 @@ fun NeatScreen() {
 fun App() {
 
     AppTheme {
-
         NeatScreen()
-        //Banner("Justin")
     }
 
 
