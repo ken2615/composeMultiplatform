@@ -299,9 +299,14 @@ fun Drawer() {
             .background(Color.White)
             .fillMaxSize()
     ) {
-        repeat(5) { item ->
-            Text(text = "Item number $item", modifier = Modifier.padding(8.dp), color = Color.Black)
-        }
+//        repeat(5) { item ->
+//            Text(text = "Item number $item", modifier = Modifier.padding(8.dp), color = Color.Black)
+//        }
+        Text(text = "Chest Exercise", modifier = Modifier.padding(8.dp), color = Color.Black)
+        Text(text = "Cardio Exercise", modifier = Modifier.padding(8.dp), color = Color.Black)
+        Text(text = "Legs Exercise", modifier = Modifier.padding(8.dp), color = Color.Black)
+        Text(text = "Back Exercise", modifier = Modifier.padding(8.dp), color = Color.Black)
+        Text(text = "Shoulder Exercise", modifier = Modifier.padding(8.dp), color = Color.Black)
     }
 }
 
@@ -328,6 +333,7 @@ fun MyForm() {
     val emailValue = rememberSaveable{ mutableStateOf("")}
     val passwordValue = rememberSaveable{ mutableStateOf("") }
     var metric by rememberSaveable { mutableStateOf(true) }
+    val showText = rememberSaveable {(mutableStateOf(false))}
     val metricHeight = rememberSaveable { (mutableStateOf("")) }
     val metricWeight = rememberSaveable { (mutableStateOf("")) }
     val imperialFoot = rememberSaveable { (mutableStateOf("")) }
@@ -372,12 +378,16 @@ fun MyForm() {
         )
 
         Row {
-            Button(onClick = { metric = true }) {
+            Button(onClick = {
+                metric = true
+                showText.value = false}) {
                 Text(text = "Metric")
                 //println(metric)
             }
             Spacer(modifier = Modifier.width(10.dp))
-            Button(onClick = { metric = false }) {
+            Button(onClick = {
+                metric = false
+                showText.value = false}) {
                 Text(text = "Imperial")
                 //println(metric)
             }
@@ -432,23 +442,55 @@ fun MyForm() {
                     bmiWeight.value = metricWeight.value.toDouble()
                     bmiHeight.value = metricHeight.value.toDouble() / 100.0
                     bmi.value = bmiWeight.value / (bmiHeight.value * bmiHeight.value)
+                    showText.value = true
                 }) {
                     Text(text = "Submit")
                 }
-                Text( text = "Your BMI is ${bmi.value.toInt()}")
+//                Text( text = "Your BMI is ${bmi.value.toInt()}")
+//                CheckBMI(bmi.value.toInt())
             }
             else if(!metric && imperialFoot.value.isNotEmpty() && imperialInch.value.isNotEmpty() && imperialWeight.value.isNotEmpty()){
                 Button(onClick = {
                     bmiHeight.value = ((imperialFoot.value.toDouble() * 12) + imperialInch.value.toDouble()) / 39.37
                     bmiWeight.value = imperialWeight.value.toDouble() / 2.205
                     bmi.value = bmiWeight.value / (bmiHeight.value * bmiHeight.value)
+                    showText.value = true
                 }) {
                     Text(text = "Submit")
+
                 }
-                Text( text = "Your BMI is ${bmi.value.toInt()}")
+//                Text( text = "Your BMI is ${bmi.value.toInt()}")
+//                CheckBMI(bmi.value.toInt())
             }
+
+            if(showText.value){
+                Text( text = "Your BMI is ${bmi.value.toInt()}")
+                CheckBMI(bmi.value.toInt())
+            }
+
         }
 
+    }
+}
+@Composable
+fun CheckBMI(bmi: Int ) {
+    if(bmi >= 40){
+        Text( text = "base on your BMI you are Severe Obese, these our recommended exercises for you")
+    }
+    else if(bmi in 35..39) {
+        Text( text = "base on your BMI you are Moderate Obese, these our recommended exercises for you")
+    }
+    else if(bmi in 30 .. 34) {
+        Text( text = "base on your BMI you are Mild Obese, these our recommended exercises for you")
+    }
+    else if(bmi in 25 .. 29){
+        Text( text = "base on your BMI you are Overweight, these our recommended exercises for you")
+    }
+    else if(bmi in 18 .. 24){
+        Text( text = "base on your BMI you have Normal Weight, these our recommended exercises for you")
+    }
+    else if (bmi < 18){
+        Text( text = "base on your BMI you are Under weight, these our recommended exercises for you")
     }
 }
 
@@ -456,7 +498,6 @@ fun MyForm() {
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun NeatScreen() {
-    //topBar = { TopAppBar ( title = {Text("My App")} )},
 
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
 
